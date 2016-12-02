@@ -70,6 +70,10 @@
 	
 	var _Artists2 = _interopRequireDefault(_Artists);
 	
+	var _Artist = __webpack_require__(275);
+	
+	var _Artist2 = _interopRequireDefault(_Artist);
+	
 	var _reactRouter = __webpack_require__(207);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -83,7 +87,8 @@
 	    _react2.default.createElement(_reactRouter.IndexRedirect, { to: 'albums' }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'albums', component: _Albums2.default }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'albums/:albumId', component: _Album2.default }),
-	    _react2.default.createElement(_reactRouter.Route, { path: 'artists', component: _Artists2.default })
+	    _react2.default.createElement(_reactRouter.Route, { path: 'artists', component: _Artists2.default }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'artists/:artistId', component: _Artist2.default })
 	  )
 	), document.getElementById('app'));
 
@@ -21504,6 +21509,8 @@
 	  value: true
 	});
 	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _react = __webpack_require__(1);
@@ -21542,7 +21549,11 @@
 	
 	var _Artists2 = _interopRequireDefault(_Artists);
 	
-	var _utils = __webpack_require__(275);
+	var _Artist = __webpack_require__(275);
+	
+	var _Artist2 = _interopRequireDefault(_Artist);
+	
+	var _utils = __webpack_require__(276);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -21553,8 +21564,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	// import Artist from '../components/Artist.js';
-	
 	
 	var AppContainer = function (_Component) {
 	  _inherits(AppContainer, _Component);
@@ -21571,6 +21580,7 @@
 	    _this.next = _this.next.bind(_this);
 	    _this.prev = _this.prev.bind(_this);
 	    _this.selectAlbum = _this.selectAlbum.bind(_this);
+	    _this.selectArtist = _this.selectArtist.bind(_this);
 	    return _this;
 	  }
 	
@@ -21673,6 +21683,38 @@
 	      });
 	    }
 	  }, {
+	    key: 'selectArtist',
+	    value: function selectArtist(artistId) {
+	      var _this4 = this;
+	
+	      var gettingArtist = _axios2.default.get('/api/artists/' + artistId);
+	      var gettingAlbums = _axios2.default.get('/api/artists/' + artistId + '/albums');
+	      var gettingSongs = _axios2.default.get('/api/artists/' + artistId + '/songs');
+	
+	      Promise.all([gettingArtist, gettingAlbums, gettingSongs]).then(function (res) {
+	        var _res = _slicedToArray(res, 3),
+	            resArtist = _res[0],
+	            resAlbums = _res[1],
+	            resSongs = _res[2];
+	
+	        var selectedArtist = resArtist.data;
+	        var albums = resAlbums.data.map(function (album) {
+	          return (0, _utils.convertAlbum)(album);
+	        });
+	        var currentSongList = resSongs.data;
+	
+	        console.log(selectedArtist, albums, currentSongList);
+	
+	        _this4.setState({
+	          selectedArtist: selectedArtist,
+	          albums: albums,
+	          currentSongList: currentSongList
+	        });
+	      }).catch(function (error) {
+	        return console.log(error);
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
@@ -21699,7 +21741,10 @@
 	            selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
 	
 	            //Artists component's props
-	            artists: this.state.artists
+	            artists: this.state.artists,
+	            selectArtist: this.selectArtist,
+	            selectedArtist: this.state.selectedArtist,
+	            songs: this.state.currentSongList
 	          }) : null
 	        ),
 	        _react2.default.createElement(_Player2.default, {
@@ -29344,6 +29389,82 @@
 
 /***/ },
 /* 275 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _Songs = __webpack_require__(271);
+	
+	var _Songs2 = _interopRequireDefault(_Songs);
+	
+	var _Albums = __webpack_require__(206);
+	
+	var _Albums2 = _interopRequireDefault(_Albums);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _class = function (_Component) {
+	  _inherits(_class, _Component);
+	
+	  function _class(props) {
+	    _classCallCheck(this, _class);
+	
+	    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
+	
+	    _this.state = {};
+	    return _this;
+	  }
+	
+	  _createClass(_class, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.props.selectArtist(this.props.routeParams.artistId);
+	      console.log('ran selectArtist');
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h3',
+	          null,
+	          this.props.selectedArtist.name
+	        ),
+	        _react2.default.createElement(_Albums2.default, { albums: this.props.albums }),
+	        _react2.default.createElement(_Songs2.default, {
+	          songs: this.props.songs,
+	          currentSong: this.props.currentSong,
+	          isPlaying: this.props.isPlaying,
+	          toggleOne: this.props.toggle })
+	      );
+	    }
+	  }]);
+
+	  return _class;
+	}(_react.Component);
+
+	exports.default = _class;
+
+/***/ },
+/* 276 */
 /***/ function(module, exports) {
 
 	"use strict";

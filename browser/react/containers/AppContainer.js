@@ -9,7 +9,7 @@ import Album from '../components/Album';
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 import Artists from '../components/Artists.js';
-// import Artist from '../components/Artist.js';
+import Artist from '../components/Artist.js';
 
 
 import { convertAlbum, convertAlbums, skip } from '../utils';
@@ -25,6 +25,7 @@ export default class AppContainer extends Component {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
+    this.selectArtist = this.selectArtist.bind(this);
   }
 
   componentDidMount () {
@@ -38,7 +39,7 @@ export default class AppContainer extends Component {
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
 
     axios.get('/api/artists/')
-      .then(res => res.data) 
+      .then(res => res.data)
       .then(artists => this.setState({ artists }));
   }
 
@@ -104,6 +105,33 @@ export default class AppContainer extends Component {
       }));
   }
 
+  selectArtist (artistId){
+
+    const gettingArtist = axios.get(`/api/artists/${artistId}`);
+    const gettingAlbums = axios.get(`/api/artists/${artistId}/albums`);
+    const gettingSongs = axios.get(`/api/artists/${artistId}/songs`);
+
+    Promise.all([gettingArtist, gettingAlbums, gettingSongs])
+    .then(res => {
+      var [resArtist, resAlbums, resSongs] = res;
+
+      const selectedArtist = resArtist.data;
+      const albums = resAlbums.data.map(album => convertAlbum(album));
+      const currentSongList = resSongs.data;
+
+      console.log(selectedArtist,
+        albums,
+        currentSongList);
+
+      this.setState({
+        selectedArtist,
+        albums,
+        currentSongList
+      })
+    })
+    .catch(error => console.log(error));
+  }
+
   render () {
     return (
       <div id="main" className="container-fluid">
@@ -124,9 +152,12 @@ export default class AppContainer extends Component {
               // Albums (plural) component's props
               albums: this.state.albums,
               selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
-              
+
               //Artists component's props
               artists: this.state.artists,
+              selectArtist: this.selectArtist,
+              selectedArtist: this.state.selectedArtist,
+              songs: this.state.currentSongList,
             })
             : null
         }
