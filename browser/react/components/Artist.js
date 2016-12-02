@@ -23,6 +23,7 @@ export default class extends Component {
       currentSong: this.props.currentSong,
       isPlaying: this.props.isPlaying,
       toggleOne: this.props.toggleOne,
+      selectedArtist: selectedArtist,
     }
 
     return (

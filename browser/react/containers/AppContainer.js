@@ -31,6 +31,23 @@ export default class AppContainer extends Component {
     this.resetState = this.resetState.bind(this);
   }
 
+  // static childContextTypes () {
+  //       router: React.PropTypes.object
+  //   }
+
+  // getChildContext(){
+  //     return {
+  //       router: this.props.router
+  //     };
+  //   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.invalid === nextState.invalid && this.state.invalid === true) {
+      this.setState({ invalid: false })
+    }
+    return true;
+  }
+
   componentDidMount () {
     axios.get('/api/albums/')
     .then(res => res.data)
@@ -108,7 +125,7 @@ export default class AppContainer extends Component {
 
   resetState () {
     console.log('trying to reset state');
-    this.setState(initialState);
+    this.setState({invalid: false});
   }
 
   selectAlbum (albumId) {
@@ -164,7 +181,8 @@ export default class AppContainer extends Component {
           />
         </div>
         )
-    } else return (
+    } else 
+    return (
       <div id="main" className="container-fluid">
         <div className="col-xs-2">
           <Sidebar />
@@ -192,7 +210,7 @@ export default class AppContainer extends Component {
               songs: this.state.currentSongList,
 
               //NotFound props
-              resetState: this.resetState,
+              invalid: this.state.invalid,
             })
             : null
         }

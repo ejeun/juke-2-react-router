@@ -1,22 +1,26 @@
 import React, { Component } from 'react';
 import { Link, Lifecycle, RouterContext } from 'react-router';
-// import reactMixin from 'react-mixin';
 
-export default class extends Component {
+export default class NotFound extends Component {
 
-  static contextTypes = {router: React.PropTypes.object.isRequired};
+  // static contextTypes () {
+  //   router: React.PropTypes.object.isRequired
+  // }
 
   constructor(props){
     super(props);
-    this.state = {};
+    this.state = {}
   }
 
+  // componentDidMount() {
+  //   const { route } = this.props
+  //   const { router } = this.context
+  //   router.setRouteLeaveHook(route, this.routerWillLeave);
+  // }
 
-  componentDidMount() {
-    const { route } = this.props
-    const { router } = this.context
-    router.setRouteLeaveHook(route, this.props.resetState)
-  }
+  // routerWillLeave() {
+  //   this.props.resetState();
+  // }
 
   render() {
     return (
@@ -28,3 +32,4 @@ export default class extends Component {
     );
   }
 }
+// onLeave={() => this.props.resetState()}

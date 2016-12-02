@@ -78,7 +78,7 @@
 	
 	var _Songs2 = _interopRequireDefault(_Songs);
 	
-	var _NotFound = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./components/NotFound\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _NotFound = __webpack_require__(276);
 	
 	var _NotFound2 = _interopRequireDefault(_NotFound);
 	
@@ -102,7 +102,7 @@
 	      _react2.default.createElement(_reactRouter.Route, { path: 'albums', component: _Albums2.default }),
 	      _react2.default.createElement(_reactRouter.Route, { path: 'songs', component: _Songs2.default })
 	    ),
-	    _react2.default.createElement(_reactRouter.Route, { path: '*', status: 404, component: _NotFound2.default })
+	    _react2.default.createElement(_reactRouter.Route, { path: '*', status: 404, component: _NotFound2.default, onLeave: _AppContainer2.default.resetState })
 	  )
 	), document.getElementById('app'));
 
@@ -21567,7 +21567,7 @@
 	
 	var _Artist2 = _interopRequireDefault(_Artist);
 	
-	var _NotFound = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../components/NotFound\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _NotFound = __webpack_require__(276);
 	
 	var _NotFound2 = _interopRequireDefault(_NotFound);
 	
@@ -21604,7 +21604,25 @@
 	    return _this;
 	  }
 	
+	  // static childContextTypes () {
+	  //       router: React.PropTypes.object
+	  //   }
+	
+	  // getChildContext(){
+	  //     return {
+	  //       router: this.props.router
+	  //     };
+	  //   }
+	
 	  _createClass(AppContainer, [{
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps, nextState) {
+	      if (this.state.invalid === nextState.invalid && this.state.invalid === true) {
+	        this.setState({ invalid: false });
+	      }
+	      return true;
+	    }
+	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var _this2 = this;
@@ -21704,7 +21722,7 @@
 	    key: 'resetState',
 	    value: function resetState() {
 	      console.log('trying to reset state');
-	      this.setState(_initialState2.default);
+	      this.setState({ invalid: false });
 	    }
 	  }, {
 	    key: 'selectAlbum',
@@ -21809,7 +21827,7 @@
 	            songs: this.state.currentSongList,
 	
 	            //NotFound props
-	            resetState: this.resetState
+	            invalid: this.state.invalid
 	          }) : null
 	        ),
 	        _react2.default.createElement(_Player2.default, {
@@ -23392,12 +23410,12 @@
 	    return _this;
 	  }
 	
-	  // componentDidMount(){
-	  //   if (this.props.getAlbums) this.props.getAlbums(); 
-	  //   //Since this method is only passed down by the AppContainer parent, this does not run when Artist component supplies albums
-	  // }
-	
 	  _createClass(_class, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      if (this.props.selectedArtist.name === undefined) this.props.getAlbums(); //uncaught error but this works
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	
@@ -29517,7 +29535,8 @@
 	        songs: this.props.songs,
 	        currentSong: this.props.currentSong,
 	        isPlaying: this.props.isPlaying,
-	        toggleOne: this.props.toggleOne
+	        toggleOne: this.props.toggleOne,
+	        selectedArtist: selectedArtist
 	      };
 	
 	      return _react2.default.createElement(
@@ -29561,7 +29580,90 @@
 	exports.default = _class;
 
 /***/ },
-/* 276 */,
+/* 276 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRouter = __webpack_require__(207);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var NotFound = function (_Component) {
+	  _inherits(NotFound, _Component);
+	
+	  // static contextTypes () {
+	  //   router: React.PropTypes.object.isRequired
+	  // }
+	
+	  function NotFound(props) {
+	    _classCallCheck(this, NotFound);
+	
+	    var _this = _possibleConstructorReturn(this, (NotFound.__proto__ || Object.getPrototypeOf(NotFound)).call(this, props));
+	
+	    _this.state = {};
+	    return _this;
+	  }
+	
+	  // componentDidMount() {
+	  //   const { route } = this.props
+	  //   const { router } = this.context
+	  //   router.setRouteLeaveHook(route, this.routerWillLeave);
+	  // }
+	
+	  // routerWillLeave() {
+	  //   this.props.resetState();
+	  // }
+	
+	  _createClass(NotFound, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          'h3',
+	          null,
+	          '404 Page not found'
+	        ),
+	        _react2.default.createElement(
+	          'p',
+	          null,
+	          'This is why we can\'t have nice things'
+	        ),
+	        _react2.default.createElement(
+	          _reactRouter.Link,
+	          { to: '/albums' },
+	          'Take me back where I belong!'
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return NotFound;
+	}(_react.Component);
+	// onLeave={() => this.props.resetState()}
+	
+	
+	exports.default = NotFound;
+
+/***/ },
 /* 277 */
 /***/ function(module, exports) {
 

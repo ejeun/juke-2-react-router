@@ -7,10 +7,9 @@ export default class extends Component {
     this.state = {}
   }
 
-  // componentDidMount(){
-  //   if (this.props.getAlbums) this.props.getAlbums(); 
-  //   //Since this method is only passed down by the AppContainer parent, this does not run when Artist component supplies albums
-  // }
+  componentDidMount () {   
+    if (this.props.selectedArtist.name === undefined ) this.props.getAlbums(); //uncaught error but this works
+  }
 
   render() {
 
