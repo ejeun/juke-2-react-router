@@ -10,6 +10,7 @@ import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 import Artists from '../components/Artists.js';
 import Artist from '../components/Artist.js';
+import NotFound from '../components/NotFound';
 
 
 import { convertAlbum, convertAlbums, skip } from '../utils';
@@ -26,12 +27,11 @@ export default class AppContainer extends Component {
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.selectArtist = this.selectArtist.bind(this);
+    this.getAlbums = this.getAlbums.bind(this);
   }
 
   componentDidMount () {
-    axios.get('/api/albums/')
-      .then(res => res.data)
-      .then(albums => this.onLoad(convertAlbums(albums)));
+    this.getAlbums();
 
     AUDIO.addEventListener('ended', () =>
       this.next());
@@ -41,6 +41,12 @@ export default class AppContainer extends Component {
     axios.get('/api/artists/')
       .then(res => res.data)
       .then(artists => this.setState({ artists }));
+  }
+
+  getAlbums () {
+    axios.get('/api/albums/')
+    .then(res => res.data)
+    .then(albums => this.onLoad(convertAlbums(albums)));
   }
 
   onLoad (albums) {
@@ -102,7 +108,8 @@ export default class AppContainer extends Component {
       .then(res => res.data)
       .then(album => this.setState({
         selectedAlbum: convertAlbum(album)
-      }));
+      }))
+    .catch(error => this.setState({ invalid: true }));  
   }
 
   selectArtist (artistId){
@@ -113,30 +120,46 @@ export default class AppContainer extends Component {
 
     Promise.all([gettingArtist, gettingAlbums, gettingSongs])
     .then(res => {
-      var [resArtist, resAlbums, resSongs] = res;
+      const [resArtist, resAlbums, resSongs] = res;
 
       const selectedArtist = resArtist.data;
       const albums = resAlbums.data.map(album => convertAlbum(album));
       const currentSongList = resSongs.data;
 
-      console.log(selectedArtist,
-        albums,
-        currentSongList);
-
       this.setState({
         selectedArtist,
         albums,
-        currentSongList
+        currentSongList,
       })
     })
-    .catch(error => console.log(error));
+    .catch(error => this.setState({ invalid: true }));  
   }
 
   render () {
-    return (
+    if (this.state.invalid) {
+      return (
+        <div id="main" className="container-fluid">
+          <div className="col-xs-2">
+            <Sidebar />
+          </div>
+          <div className="col-xs-10">
+          <NotFound />
+          </div>
+          <Player
+          currentSong={this.state.currentSong}
+          currentSongList={this.state.currentSongList}
+          isPlaying={this.state.isPlaying}
+          progress={this.state.progress}
+          next={this.next}
+          prev={this.prev}
+          toggle={this.toggle}
+          />
+        </div>
+        )
+    } else return (
       <div id="main" className="container-fluid">
         <div className="col-xs-2">
-          <Sidebar deselectAlbum={this.deselectAlbum} />
+          <Sidebar />
         </div>
         <div className="col-xs-10">
         {
@@ -147,11 +170,12 @@ export default class AppContainer extends Component {
               album: this.state.selectedAlbum,
               currentSong: this.state.currentSong,
               isPlaying: this.state.isPlaying,
-              toggle: this.toggleOne,
+              toggleOne: this.toggleOne,
 
               // Albums (plural) component's props
               albums: this.state.albums,
-              selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
+              selectAlbum: this.selectAlbum,
+              getAlbums: this.getAlbums,
 
               //Artists component's props
               artists: this.state.artists,
