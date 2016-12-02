@@ -20,7 +20,7 @@ ReactDOM.render(
         <Route path='albums' component={Albums} />
         <Route path='songs' component={Songs} />
       </Route>
-      <Route path='*' component={NotFound} />
+      <Route path='*' status={404} component={NotFound} />
     </Route>
   </Router>,
   document.getElementById('app')

@@ -1,14 +1,30 @@
-import React from 'react';
-import { Link } from 'react-router';
+import React, { Component } from 'react';
+import { Link, Lifecycle, RouterContext } from 'react-router';
+// import reactMixin from 'react-mixin';
 
-const NotFound = () => {
-  return (
-    <div>
-      <h3>404 Page not found</h3>
-      <p>This is why we can't have nice things</p>
-      <Link to='/albums'>Take me back where I belong!</Link>
-    </div>
-  );
+export default class extends Component {
+
+  static contextTypes = {router: React.PropTypes.object.isRequired};
+
+  constructor(props){
+    super(props);
+    this.state = {};
+  }
+
+
+  componentDidMount() {
+    const { route } = this.props
+    const { router } = this.context
+    router.setRouteLeaveHook(route, this.props.resetState)
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>404 Page not found</h3>
+        <p>This is why we can't have nice things</p>
+        <Link to='/albums'>Take me back where I belong!</Link>
+      </div>
+    );
+  }
 }
-
-export default NotFound;

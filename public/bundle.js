@@ -78,7 +78,7 @@
 	
 	var _Songs2 = _interopRequireDefault(_Songs);
 	
-	var _NotFound = __webpack_require__(276);
+	var _NotFound = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./components/NotFound\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	
 	var _NotFound2 = _interopRequireDefault(_NotFound);
 	
@@ -102,7 +102,7 @@
 	      _react2.default.createElement(_reactRouter.Route, { path: 'albums', component: _Albums2.default }),
 	      _react2.default.createElement(_reactRouter.Route, { path: 'songs', component: _Songs2.default })
 	    ),
-	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _NotFound2.default })
+	    _react2.default.createElement(_reactRouter.Route, { path: '*', status: 404, component: _NotFound2.default })
 	  )
 	), document.getElementById('app'));
 
@@ -21567,7 +21567,7 @@
 	
 	var _Artist2 = _interopRequireDefault(_Artist);
 	
-	var _NotFound = __webpack_require__(276);
+	var _NotFound = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../components/NotFound\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	
 	var _NotFound2 = _interopRequireDefault(_NotFound);
 	
@@ -21600,6 +21600,7 @@
 	    _this.selectAlbum = _this.selectAlbum.bind(_this);
 	    _this.selectArtist = _this.selectArtist.bind(_this);
 	    _this.getAlbums = _this.getAlbums.bind(_this);
+	    _this.resetState = _this.resetState.bind(_this);
 	    return _this;
 	  }
 	
@@ -21608,7 +21609,11 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      this.getAlbums();
+	      _axios2.default.get('/api/albums/').then(function (res) {
+	        return res.data;
+	      }).then(function (albums) {
+	        return _this2.onLoad((0, _utils.convertAlbums)(albums));
+	      });
 	
 	      _audio2.default.addEventListener('ended', function () {
 	        return _this2.next();
@@ -21694,6 +21699,12 @@
 	    key: 'setProgress',
 	    value: function setProgress(progress) {
 	      this.setState({ progress: progress });
+	    }
+	  }, {
+	    key: 'resetState',
+	    value: function resetState() {
+	      console.log('trying to reset state');
+	      this.setState(_initialState2.default);
 	    }
 	  }, {
 	    key: 'selectAlbum',
@@ -21795,7 +21806,10 @@
 	            artists: this.state.artists,
 	            selectArtist: this.selectArtist,
 	            selectedArtist: this.state.selectedArtist,
-	            songs: this.state.currentSongList
+	            songs: this.state.currentSongList,
+	
+	            //NotFound props
+	            resetState: this.resetState
 	          }) : null
 	        ),
 	        _react2.default.createElement(_Player2.default, {
@@ -23378,13 +23392,12 @@
 	    return _this;
 	  }
 	
+	  // componentDidMount(){
+	  //   if (this.props.getAlbums) this.props.getAlbums(); 
+	  //   //Since this method is only passed down by the AppContainer parent, this does not run when Artist component supplies albums
+	  // }
+	
 	  _createClass(_class, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      if (this.props.getAlbums) this.props.getAlbums();
-	      //Since this method is only passed down by the AppContainer parent, this does not run when Artist component supplies albums
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	
@@ -29548,48 +29561,7 @@
 	exports.default = _class;
 
 /***/ },
-/* 276 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _reactRouter = __webpack_require__(207);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var NotFound = function NotFound() {
-	  return _react2.default.createElement(
-	    'div',
-	    null,
-	    _react2.default.createElement(
-	      'h3',
-	      null,
-	      '404 Page not found'
-	    ),
-	    _react2.default.createElement(
-	      'p',
-	      null,
-	      'This is why we can\'t have nice things'
-	    ),
-	    _react2.default.createElement(
-	      _reactRouter.Link,
-	      { to: '/albums' },
-	      'Take me back where I belong!'
-	    )
-	  );
-	};
-	
-	exports.default = NotFound;
-
-/***/ },
+/* 276 */,
 /* 277 */
 /***/ function(module, exports) {
 

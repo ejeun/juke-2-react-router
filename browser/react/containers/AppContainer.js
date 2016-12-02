@@ -28,10 +28,13 @@ export default class AppContainer extends Component {
     this.selectAlbum = this.selectAlbum.bind(this);
     this.selectArtist = this.selectArtist.bind(this);
     this.getAlbums = this.getAlbums.bind(this);
+    this.resetState = this.resetState.bind(this);
   }
 
   componentDidMount () {
-    this.getAlbums();
+    axios.get('/api/albums/')
+    .then(res => res.data)
+    .then(albums => this.onLoad(convertAlbums(albums)));
 
     AUDIO.addEventListener('ended', () =>
       this.next());
@@ -101,6 +104,11 @@ export default class AppContainer extends Component {
 
   setProgress (progress) {
     this.setState({ progress: progress });
+  }
+
+  resetState () {
+    console.log('trying to reset state');
+    this.setState(initialState);
   }
 
   selectAlbum (albumId) {
@@ -182,6 +190,9 @@ export default class AppContainer extends Component {
               selectArtist: this.selectArtist,
               selectedArtist: this.state.selectedArtist,
               songs: this.state.currentSongList,
+
+              //NotFound props
+              resetState: this.resetState,
             })
             : null
         }
